@@ -2,11 +2,11 @@
 #define RSITE_STREAM_FLOW
 
 #include <Stream.h>
-#include <avr/pgmspace.h>
+//#include <avr/pgmspace.h>
 #include <HardwareSerial.h>
 
-#define endl "\n\r"
-#define tab "\t"
+//#define endl "\n\r"
+//#define tab "\t"
 class fmt {
   public:
   virtual Stream& operator<<(Stream& o)=0;
@@ -62,16 +62,25 @@ inline Stream& operator<<(Stream& s,const __FlashStringHelper* v) {
 //inline Stream& operator<<(Stream& s,fmt& v) {return v.operator<<(s);}
 //.. add some more members as needed
 
-/*template <int N> 
+class endlObj:public fmt {
+  public:Stream& operator<<(Stream& o) override {return o<<"\r\n";}
+};
+class tabObj:public fmt {
+  public:Stream& operator<<(Stream& o) override {return o<<'\t';}
+};
+extern endlObj endl;
+extern tabObj tab;
+inline Stream& operator<<(Stream &o,endlObj& v) {return v.operator<<(o);}
+inline Stream& operator<<(Stream &o,tabObj& v) {return v.operator<<(o);}
+
+template <int N>
 class tabs {
 	public:
-  Stream& operator<<(Stream& o) {for(int n=0;n<N;n++) o<<tab;return o;}
+  Stream& operator<<(Stream& o) {for(int n=0;n<N;n++) tab.operator<<(o);return o;}
 };
 
-template <int N> 
+template <int N>
 inline Stream& operator<<(Stream& s,tabs<N>& v) {return v.operator<<(s);}
-template<> Stream& operator<<(Stream&,tabs<1> v) {return v.operator<<(s);}*/
+// template<> Stream& operator<<(Stream&,tabs<1> v) {return v.operator<<(s);}
 
 #endif
-
-
