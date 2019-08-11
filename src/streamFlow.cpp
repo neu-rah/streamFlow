@@ -6,3 +6,4 @@ endlObj endl;
 tabObj tab;
 thenObj then;
 dotObj dot;
+dotlObj dotl;
