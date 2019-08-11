@@ -9,6 +9,7 @@
 //#define tab "\t"
 //#define then "\0"
 //#define dot "."
+//#define dotl ".\n\r"
 class fmt {
   public:
   virtual Stream& operator<<(Stream& o)=0;
@@ -76,14 +77,19 @@ class thenObj:public fmt {
 class dotObj:public fmt {
   public:Stream& operator<<(Stream& o) override {return o<<'.';}
 };
+class dotlObj:public fmt {
+  public:Stream& operator<<(Stream& o) override {return o<<".\r\n";}
+};
 extern endlObj endl;
 extern tabObj tab;
 extern thenObj then;
 extern dotObj dot;
+extern dotlObj dot;
 inline Stream& operator<<(Stream &o,endlObj& v) {return v.operator<<(o);}
 inline Stream& operator<<(Stream &o,tabObj& v) {return v.operator<<(o);}
 inline Stream& operator<<(Stream &o,thenObj& v) {return v.operator<<(o);}
 inline Stream& operator<<(Stream &o,dotObj& v) {return v.operator<<(o);}
+inline Stream& operator<<(Stream &o,dotlObj& v) {return v.operator<<(o);}
 
 template <int N>
 class tabs {
