@@ -5,3 +5,4 @@ StreamFlush go;
 endlObj endl;
 tabObj tab;
 thenObj then;
+dotObj dot;
