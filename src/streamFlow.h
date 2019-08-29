@@ -84,7 +84,7 @@ extern endlObj endl;
 extern tabObj tab;
 extern thenObj then;
 extern dotObj dot;
-extern dotlObj dot;
+extern dotlObj dotl;
 inline Stream& operator<<(Stream &o,endlObj& v) {return v.operator<<(o);}
 inline Stream& operator<<(Stream &o,tabObj& v) {return v.operator<<(o);}
 inline Stream& operator<<(Stream &o,thenObj& v) {return v.operator<<(o);}
