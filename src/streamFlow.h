@@ -8,9 +8,9 @@ namespace StreamFlow {
   using Serial_=decltype(Serial);
 
   /// @brief currect output decimal places
-  static extern byte m_prec;
+  extern byte m_prec;
   /// @brief currect output digit base to use on integral print
-  static extern byte m_radix;
+  extern byte m_radix;
 
   /// @brief use _radix stream external info to request Arduino radix format
   /// @tparam T numeric integral type
