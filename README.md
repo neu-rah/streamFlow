@@ -2,12 +2,27 @@
 
 Simple and light-weight stream operator for Arduino framework.
 
+This is not an emulation of C++ ostream, but it mimics those good parts
+
+## Supporting
+- operator<<
+- endl
+- flush
+- precision(n) for float only
+- dec, hex, oct, bin radix base spec. only for integral numbers
+
+
+## Example
 ```c++
-Serial<<"Value:"<<value<<endl;
+#include <streamFlow.h>
+using namespace StreamFlow;
 
-Serial<<"Step 1"<<then;
-Serial<<"Step 2"<<endl;
-
-Serial<<dot;
-Serial<<dotl;
+void setup() {
+  Serial.begin(115200);
+  while(!Serial);
+  Serial<<"stream style with arduino Serial"<<endl
+        <<"version:"<<precision(2)<<2.0<<endl
+        <<"hex format 0x"<<hex<<1967<<endl
+        <<"enjoy!"<<endl<<flush;
+}
 ```

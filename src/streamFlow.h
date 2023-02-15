@@ -1,104 +1,86 @@
-#ifndef RSITE_STREAM_FLOW
+#pragma once
 #define RSITE_STREAM_FLOW
 
-#include <Stream.h>
-//#include <avr/pgmspace.h>
-#include <HardwareSerial.h>
+#include <Arduino.h>
 
-//#define endl "\n\r"
-//#define tab "\t"
-//#define then "\0"
-//#define dot "."
-//#define dotl ".\n\r"
-class fmt {
-  public:
-  virtual Stream& operator<<(Stream& o)=0;
-};
+namespace StreamFlow {
 
-class StreamFlush:public fmt {
-  public:
-  StreamFlush() {}
-  virtual Stream& operator<<(Stream& o) {o.flush();return o;}
-};
+  using Serial_=decltype(Serial);
 
-extern StreamFlush go;
+  /// @brief currect output decimal places
+  static extern byte m_prec;
+  /// @brief currect output digit base to use on integral print
+  static extern byte m_radix;
 
-class intFmt:public fmt {
-  public:
-  intFmt(int v):v(v) {}
-  int v;
-};
+  /// @brief use _radix stream external info to request Arduino radix format
+  /// @tparam T numeric integral type
+  /// @param s output object
+  /// @param n numeric integral data
+  /// @return the output object
+  template<typename T> Serial_& _print_integral_num(Serial_& s,T n) {s.print(n,m_radix);m_radix=DEC;return s;}
+  template<typename T> Serial_& _print_scientific_num(Serial_& s,T n) {s.print(n,m_prec);return s;}
 
-class hex:public intFmt {
-  public:
-  hex(int v):intFmt(v) {}
-  Stream& operator<<(Stream& s) {s.print(v,HEX);return s;}
-};
+  /// @brief hold desired precision till next data in printedm then restores the previous precision
+  struct Precision {
+    byte np;
+    Precision(int p):np(p) {}
+    /// @brief hold precision and stream while waitibg for next data
+    struct Bound {
+      Serial_& s;
+      byte np;
+      Bound(Serial_& s,int p):s(s),np(p) {}
+      /// @brief print the next data and return to old precision format
+      /// @tparam T data type
+      /// @param o data
+      /// @return the stream to resume printing
+      template<typename T>
+      Serial_& operator<<(const T o) {
+        byte tmp=m_prec;
+        m_prec=np;
+        s<<o;
+        m_prec=tmp;
+        return s;
+      }
+    };
+    Bound operator<<(Serial_& s) {return Bound(s,np);}
+  };
 
-class bin:public intFmt {
-  public:
-  bin(int v):intFmt(v) {}
-  Stream& operator<<(Stream& s) {s.print(v,BIN);return s;}
-};
+  /// @brief helps holding fotmat informtation external to stream
+  /// @param p decimal places
+  /// @return Precision 
+  Precision precision(byte p) {return Precision(p);}
 
-inline Stream& operator<<(Stream& s,hex v) {return v.operator<<(s);}
-inline Stream& operator<<(Stream& s,bin v) {return v.operator<<(s);}
+  /// @brief operator<< overload for native common types thru Serial_&
+  /// @param s the output device
+  /// @param o the data
+  /// @return the output device
+  /// @{
+  Serial_& operator<<(Serial_& s,const __FlashStringHelper *o) {s.print(o);return s;} 
+  Serial_& operator<<(Serial_& s,const unsigned long n) {return _print_integral_num(s,n);} 
+  Serial_& operator<<(Serial_& s,const long n) {return _print_integral_num(s,n);} 
+  Serial_& operator<<(Serial_& s,const unsigned int n) {return _print_integral_num(s,n);} 
+  Serial_& operator<<(Serial_& s,const int n) {return _print_integral_num(s,n);} 
+  Serial_& operator<<(Serial_& s,const float n) {return _print_scientific_num(s,n);} 
+  Serial_& operator<<(Serial_& s,const double n) {return _print_scientific_num(s,n);} 
+  Serial_& operator<<(Serial_& s,const String &str) {s.print(str);return s;} 
+  Serial_& operator<<(Serial_& s,const char str[]) {s.print(str);return s;} 
+  Serial_& operator<<(Serial_& s,const char c) {s.write(c);return s;} 
+  Serial_& operator<<(Serial_& s,const Printable& x) {x.printTo(s);return s;}
+  Serial_& operator<<(Serial_& s,Serial_&(f)(Serial_&)) {return f(s);}
+  Precision operator<<(Serial_& s,Precision(p)(Serial_&)) {return p(s);}
+  Precision::Bound operator<<(Serial_& s,Precision p) {return p.operator<<(s);}
+  /// @}
 
-inline Stream& operator<<(Stream& s,char v) {s.print(v);return s;}
-inline Stream& operator<<(Stream& s,int v) {s.print(v);return s;}
-inline Stream& operator<<(Stream& s,long v) {s.print(v);return s;}
-inline Stream& operator<<(Stream& s,unsigned int v) {s.print(v);return s;}
-inline Stream& operator<<(Stream& s,unsigned long v) {s.print(v);return s;}
-inline Stream& operator<<(Stream& s,double v) {s.print(v);return s;}
-inline Stream& operator<<(Stream& s,const char* v) {s.print(v);return s;}
-//inline Stream& operator<<(Stream& s,const char* const __attribute__((__progmem__)) v) {s.print(v);return s;}
-inline Stream& operator<<(Stream& s,const __FlashStringHelper* v) {
-  const char* const ptr=(const char* const)v;
-  for(uint16_t n=0;n<0xffff;n++) {
-    char ch=pgm_read_byte(ptr+n);
-    if (!ch) break;
-    s.print(ch);
-  }
-  //s.print(v);
-  return s;
-}
-//inline Stream& operator<<(Stream& s,fmt& v) {return v.operator<<(s);}
-//.. add some more members as needed
+  /// @brief stream modifyers
+  /// @param s the output device
+  /// @return the output device
+  /// @{
+  inline Serial_& endl(Serial_ &s) {s.println();s.flush();return s;}
+  Serial_& flush(Serial_& s) {s.flush();return s;}
+  Serial_& dec(Serial_& s) {m_radix=DEC;return s;}
+  Serial_& hex(Serial_& s) {m_radix=HEX;return s;}
+  Serial_& oct(Serial_& s) {m_radix=OCT;return s;}
+  Serial_& bin(Serial_& s) {m_radix=BIN;return s;}
+  /// @}
 
-class endlObj:public fmt {
-  public:Stream& operator<<(Stream& o) override {return o<<"\r\n";}
-};
-class tabObj:public fmt {
-  public:Stream& operator<<(Stream& o) override {return o<<'\t';}
-};
-class thenObj:public fmt {
-  public:Stream& operator<<(Stream& o) override {return o<<'\0';}
-};
-class dotObj:public fmt {
-  public:Stream& operator<<(Stream& o) override {return o<<'.';}
-};
-class dotlObj:public fmt {
-  public:Stream& operator<<(Stream& o) override {return o<<".\r\n";}
-};
-extern endlObj endl;
-extern tabObj tab;
-extern thenObj then;
-extern dotObj dot;
-extern dotlObj dotl;
-inline Stream& operator<<(Stream &o,endlObj& v) {return v.operator<<(o);}
-inline Stream& operator<<(Stream &o,tabObj& v) {return v.operator<<(o);}
-inline Stream& operator<<(Stream &o,thenObj& v) {return v.operator<<(o);}
-inline Stream& operator<<(Stream &o,dotObj& v) {return v.operator<<(o);}
-inline Stream& operator<<(Stream &o,dotlObj& v) {return v.operator<<(o);}
-
-template <int N>
-class tabs {
-	public:
-  Stream& operator<<(Stream& o) {for(int n=0;n<N;n++) tab.operator<<(o);return o;}
-};
-
-template <int N>
-inline Stream& operator<<(Stream& s,tabs<N>& v) {return v.operator<<(s);}
-// template<> Stream& operator<<(Stream&,tabs<1> v) {return v.operator<<(s);}
-
-#endif
+};/// namespace StreamFlow
