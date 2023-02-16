@@ -48,27 +48,27 @@ namespace StreamFlow {
   /// @brief helps holding fotmat informtation external to stream
   /// @param p decimal places
   /// @return Precision 
-  Precision precision(byte p) {return Precision(p);}
+  inline Precision precision(byte p) {return Precision(p);}
 
   /// @brief operator<< overload for native common types thru Serial_&
   /// @param s the output device
   /// @param o the data
   /// @return the output device
   /// @{
-  Serial_& operator<<(Serial_& s,const __FlashStringHelper *o) {s.print(o);return s;} 
-  Serial_& operator<<(Serial_& s,const unsigned long n) {return _print_integral_num(s,n);} 
-  Serial_& operator<<(Serial_& s,const long n) {return _print_integral_num(s,n);} 
-  Serial_& operator<<(Serial_& s,const unsigned int n) {return _print_integral_num(s,n);} 
-  Serial_& operator<<(Serial_& s,const int n) {return _print_integral_num(s,n);} 
-  Serial_& operator<<(Serial_& s,const float n) {return _print_scientific_num(s,n);} 
-  Serial_& operator<<(Serial_& s,const double n) {return _print_scientific_num(s,n);} 
-  Serial_& operator<<(Serial_& s,const String &str) {s.print(str);return s;} 
-  Serial_& operator<<(Serial_& s,const char str[]) {s.print(str);return s;} 
-  Serial_& operator<<(Serial_& s,const char c) {s.write(c);return s;} 
-  Serial_& operator<<(Serial_& s,const Printable& x) {x.printTo(s);return s;}
-  Serial_& operator<<(Serial_& s,Serial_&(f)(Serial_&)) {return f(s);}
-  Precision operator<<(Serial_& s,Precision(p)(Serial_&)) {return p(s);}
-  Precision::Bound operator<<(Serial_& s,Precision p) {return p.operator<<(s);}
+  inline Serial_& operator<<(Serial_& s,const __FlashStringHelper *o) {s.print(o);return s;} 
+  inline Serial_& operator<<(Serial_& s,const unsigned long n) {return _print_integral_num(s,n);} 
+  inline Serial_& operator<<(Serial_& s,const long n) {return _print_integral_num(s,n);} 
+  inline Serial_& operator<<(Serial_& s,const unsigned int n) {return _print_integral_num(s,n);} 
+  inline Serial_& operator<<(Serial_& s,const int n) {return _print_integral_num(s,n);} 
+  inline Serial_& operator<<(Serial_& s,const float n) {return _print_scientific_num(s,n);} 
+  inline Serial_& operator<<(Serial_& s,const double n) {return _print_scientific_num(s,n);} 
+  inline Serial_& operator<<(Serial_& s,const String &str) {s.print(str);return s;} 
+  inline Serial_& operator<<(Serial_& s,const char str[]) {s.print(str);return s;} 
+  inline Serial_& operator<<(Serial_& s,const char c) {s.write(c);return s;} 
+  inline Serial_& operator<<(Serial_& s,const Printable& x) {x.printTo(s);return s;}
+  inline Serial_& operator<<(Serial_& s,Serial_&(f)(Serial_&)) {return f(s);}
+  inline Precision operator<<(Serial_& s,Precision(p)(Serial_&)) {return p(s);}
+  inline Precision::Bound operator<<(Serial_& s,Precision p) {return p.operator<<(s);}
   /// @}
 
   /// @brief stream modifyers
@@ -76,11 +76,11 @@ namespace StreamFlow {
   /// @return the output device
   /// @{
   inline Serial_& endl(Serial_ &s) {s.println();s.flush();return s;}
-  Serial_& flush(Serial_& s) {s.flush();return s;}
-  Serial_& dec(Serial_& s) {m_radix=DEC;return s;}
-  Serial_& hex(Serial_& s) {m_radix=HEX;return s;}
-  Serial_& oct(Serial_& s) {m_radix=OCT;return s;}
-  Serial_& bin(Serial_& s) {m_radix=BIN;return s;}
+  inline Serial_& flush(Serial_& s) {s.flush();return s;}
+  inline Serial_& dec(Serial_& s) {m_radix=DEC;return s;}
+  inline Serial_& hex(Serial_& s) {m_radix=HEX;return s;}
+  inline Serial_& oct(Serial_& s) {m_radix=OCT;return s;}
+  inline Serial_& bin(Serial_& s) {m_radix=BIN;return s;}
   /// @}
 
 };/// namespace StreamFlow
