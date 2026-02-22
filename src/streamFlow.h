@@ -20,7 +20,7 @@ namespace StreamFlow {
   template<typename T> Serial_& _print_integral_num(Serial_& s,T n) {s.print(n,m_radix);m_radix=DEC;return s;}
   template<typename T> Serial_& _print_scientific_num(Serial_& s,T n) {s.print(n,m_prec);return s;}
 
-  template<size_t n> using Str=char[n];
+  template<size_t n> using StrSz=char[n];
   
   /// @brief hold desired precision till next data in printedm then restores the previous precision
   struct Precision {
@@ -68,7 +68,7 @@ namespace StreamFlow {
   inline Serial_& operator<<(Serial_& s,const char str[]) {s.print(str);return s;} 
   inline Serial_& operator<<(Serial_& s,const char c) {s.write(c);return s;} 
   inline Serial_& operator<<(Serial_& s,Serial_&(f)(Serial_&)) {return f(s);}
-  template<size_t n> inline Serial_& operator<<(Serial_& s,const Str<n> c) {s.print(c);return s;} 
+  template<size_t n> inline Serial_& operator<<(Serial_& s,const StrSz<n> c) {s.print(c);return s;} 
 
   inline Precision operator<<(Serial_& s,Precision(p)(Serial_&)) {return p(s);}
   inline Precision::Bound operator<<(Serial_& s,Precision p) {return p.operator<<(s);}
